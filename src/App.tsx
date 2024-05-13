@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ToastContainer } from "react-toastify";
@@ -15,6 +15,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 function App() {
     const [access, setAccess] = useState(false);
 
+    useEffect(() => {
+        const token = localStorage.getItem("access");
+
+        if (token) {
+            setAccess(token);
+        }
+    }, []);
+
     return (
         <>
             <ThemeProvider theme={theme}>
@@ -25,6 +33,12 @@ function App() {
                         <Route path={"/login"} element={<Login setAccess={setAccess} />} />
                         <Route path={"/register"} element={<SignUp />} />
                         <Route path="*" element={<Navigate to={"/login"} />} />
+                    </Routes>
+                )}
+
+                {access && (
+                    <Routes>
+                        <Route path={"/home"} element={<Chat setAccess={setAccess} />} />
                     </Routes>
                 )}
 

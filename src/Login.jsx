@@ -25,6 +25,7 @@ const LoginScreen = (props) => {
 
         Login({ email, password }).then((res) => {
             setAccess(res.data.data);
+            localStorage.setItem("access", res.data.data);
         });
     };
 
