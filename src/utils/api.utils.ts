@@ -2,10 +2,12 @@ import ServerCodes from "../constants/ServerCodes";
 import { toaster } from "./toast.util";
 
 export const errorHandler = (status: number, body: Record<string, any>) => {
-    let message = body.user_message;
+    console.log(body);
 
-    if (Array.isArray(body.user_message)) {
-        message = body.user_message[0];
+    let message = body.message;
+
+    if (Array.isArray(body.message)) {
+        message = body.message[0];
     }
 
     toaster({ type: "error", message });

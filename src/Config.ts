@@ -15,7 +15,7 @@ const Config: ConfigType = {
         },
         DEV: {
             LIMIT: 10,
-            API_URL: " "
+            API_URL: "http://localhost:8080"
         },
         PROD: {
             LIMIT: 10,

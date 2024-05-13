@@ -94,6 +94,7 @@ class API {
         response.status = api.status;
 
         const data = await api.json();
+
         if (
             api.status >= ServerCodes.BAD_REQUEST &&
             api.status < ServerCodes.CONNECTION_TIMED_OUT
