@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
 
 import { Login } from "./api";
+import { useNavigate } from "react-router-dom";
 
 const LoginScreen = (props) => {
-    const { setAccess } = props;
+    const { setAccess, setAuthUser } = props;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -19,13 +22,14 @@ const LoginScreen = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log("Email:", email);
-        console.log("Password:", password);
-        // Add your login logic here
 
         Login({ email, password }).then((res) => {
+            setAuthUser(email);
+            localStorage.setItem("user", email);
+
             setAccess(res.data.data);
             localStorage.setItem("access", res.data.data);
+            navigate("/home");
         });
     };
 

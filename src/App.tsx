@@ -15,11 +15,18 @@ import { Navigate, Route, Routes } from "react-router-dom";
 function App() {
     const [access, setAccess] = useState(false);
 
+    const [authUser, setAuthUser] = useState(null);
+
     useEffect(() => {
         const token = localStorage.getItem("access");
 
         if (token) {
             setAccess(token);
+        }
+        const user = localStorage.getItem("user");
+
+        if (user) {
+            setAuthUser(user);
         }
     }, []);
 
@@ -30,7 +37,10 @@ function App() {
 
                 {!access && (
                     <Routes>
-                        <Route path={"/login"} element={<Login setAccess={setAccess} />} />
+                        <Route
+                            path={"/login"}
+                            element={<Login setAccess={setAccess} setAuthUser={setAuthUser} />}
+                        />
                         <Route path={"/register"} element={<SignUp />} />
                         <Route path="*" element={<Navigate to={"/login"} />} />
                     </Routes>
@@ -38,7 +48,11 @@ function App() {
 
                 {access && (
                     <Routes>
-                        <Route path={"/home"} element={<Chat setAccess={setAccess} />} />
+                        <Route
+                            path={"/home"}
+                            element={<Chat setAccess={setAccess} authUser={authUser} />}
+                        />
+                        <Route path="*" element={<Navigate to={"/home"} />} />
                     </Routes>
                 )}
 

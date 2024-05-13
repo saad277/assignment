@@ -38,7 +38,7 @@ class API {
     }
 
     attachToken(token?: string): this {
-        this._token = token || store.getState().auth.token;
+        this._token = token || localStorage.getItem("access");
         return this;
     }
 
