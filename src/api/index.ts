@@ -12,6 +12,10 @@ export const GetChats = (params = {}) => {
     return new API(`/chats`).attachToken().send();
 };
 
+export const GetChatsById = (id) => {
+    return new API(`/chats/` + id).attachToken().send();
+};
+
 export const GetUsers = (params = {}) => {
     return new API(`/users`).attachToken().send();
 };
@@ -20,6 +24,6 @@ export const GetMessagesById = (id) => {
     return new API(`/messages/` + id).attachToken().send();
 };
 
-export const PostMessage = (body) => {
-    return new API(`/messages/`, "POST").addBodyData(body).attachToken().send();
+export const PostMessage = (body, id) => {
+    return new API(`/chats/${id}/message`, "POST").addBodyData(body).attachToken().send();
 };

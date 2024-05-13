@@ -17,7 +17,10 @@ const Chat = (props) => {
     const { authUser } = props;
 
     const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([
+        { _id: 1, text: "weee" },
+        { _id: "66424ff12c85da12d7ead57d", text: "weee" }
+    ]);
     const [myUser, setMyUser] = useState(null);
     const [chats, setChats] = useState([]);
 
@@ -39,6 +42,7 @@ const Chat = (props) => {
 
     useEffect(() => {
         if (currentChat) {
+            /// need this to work to get messages
             GetMessagesById(currentChat._id).then((res) => {
                 console.log(res.data);
             });
@@ -51,10 +55,13 @@ const Chat = (props) => {
 
     const handleSendMessage = () => {
         if (message.trim() !== "") {
-            PostMessage({
-                sender: myUser._id,
-                content: message
-            });
+            PostMessage(
+                {
+                    sender: myUser._id,
+                    content: message
+                },
+                currentChat._id
+            );
             setMessage("");
         }
     };
@@ -68,7 +75,7 @@ const Chat = (props) => {
                     </Typography>
                     <List>
                         {chats.map((chat, index) => (
-                            <ListItem button key={index}>
+                            <ListItem button key={index} onClick={() => setCurrentChat(chat)}>
                                 <Avatar style={{ marginRight: 10 }}>{chat._id[0]}</Avatar>
                                 <ListItemText primary={chat._id} />
                             </ListItem>
@@ -87,7 +94,7 @@ const Chat = (props) => {
                                 key={msg.id}
                                 style={{
                                     marginBottom: 10,
-                                    textAlign: msg.senderId === 2 ? "right" : "left"
+                                    textAlign: msg._id === myUser?._id ? "right" : "left"
                                 }}
                             >
                                 <div
@@ -95,7 +102,8 @@ const Chat = (props) => {
                                         display: "inline-block",
                                         padding: "5px 10px",
                                         borderRadius: "10px",
-                                        backgroundColor: msg.senderId == 2 ? "#DCF8C6" : "#F4F4F4"
+                                        backgroundColor:
+                                            msg._id === myUser?._id ? "#DCF8C6" : "#F4F4F4"
                                     }}
                                 >
                                     {msg.text}
