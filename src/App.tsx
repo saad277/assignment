@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ToastContainer } from "react-toastify";
@@ -9,13 +9,24 @@ import theme from "./theme/index.js";
 
 import Chat from "./Chat.jsx";
 import Login from "./Login";
+import SignUp from "./SignUp";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
+    const [access, setAccess] = useState(false);
+
     return (
         <>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
-                <Login />
+
+                {!access && (
+                    <Routes>
+                        <Route path={"/login"} element={<Login setAccess={setAccess} />} />
+                        <Route path={"/register"} element={<SignUp />} />
+                        <Route path="*" element={<Navigate to={"/login"} />} />
+                    </Routes>
+                )}
 
                 <ToastContainer
                     position="bottom-right"

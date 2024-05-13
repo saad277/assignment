@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
 
-import { Login } from "./api";
+import { Login, SignUp } from "./api";
+import { toaster } from "./utils/toast.util";
+import { useNavigate } from "react-router-dom";
 
-const LoginScreen = (props) => {
-    const { setAccess } = props;
-
+const SignUpScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUserName] = useState("");
+
+    const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -23,8 +26,10 @@ const LoginScreen = (props) => {
         console.log("Password:", password);
         // Add your login logic here
 
-        Login({ email, password }).then((res) => {
-            setAccess(res.data.data);
+        SignUp({ email, password, username }).then(() => {
+            toaster({ type: "success", message: "User signup success" });
+
+            navigate("/login");
         });
     };
 
@@ -33,9 +38,17 @@ const LoginScreen = (props) => {
             <Grid item xs={12} sm={6} md={4}>
                 <Paper style={{ padding: 20 }}>
                     <Typography variant="h5" gutterBottom>
-                        Login
+                        Register
                     </Typography>
                     <form onSubmit={handleSubmit}>
+                        <TextField
+                            label="User Name"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={username}
+                            onChange={(e) => setUserName(e.target.value)}
+                        />
                         <TextField
                             label="Email"
                             variant="outlined"
@@ -60,7 +73,7 @@ const LoginScreen = (props) => {
                             fullWidth
                             style={{ marginTop: 10 }}
                         >
-                            Login
+                            Submit
                         </Button>
                     </form>
                 </Paper>
@@ -69,4 +82,4 @@ const LoginScreen = (props) => {
     );
 };
 
-export default LoginScreen;
+export default SignUpScreen;

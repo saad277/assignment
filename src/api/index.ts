@@ -7,3 +7,7 @@ export const GetUserList = (params = {}) => {
 export const Login = (body) => {
     return new API("/auth/login/", "POST").addBodyData(body).send();
 };
+
+export const SignUp = (body) => {
+    return new API("/auth/signup", "POST").addBodyData(body).send();
+};
