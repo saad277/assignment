@@ -11,16 +11,13 @@ import {
     Avatar
 } from "@mui/material";
 
-import { GetChats, GetUsers, GetMessagesById, PostMessage } from "./api";
+import { GetChats, GetUsers, GetMessagesById, PostMessage, GetChatsById } from "./api";
 
 const Chat = (props) => {
     const { authUser } = props;
 
     const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState([
-        { _id: 1, text: "weee" },
-        { _id: "66424ff12c85da12d7ead57d", text: "weee" }
-    ]);
+    const [messages, setMessages] = useState([]);
     const [myUser, setMyUser] = useState(null);
     const [chats, setChats] = useState([]);
 
@@ -43,8 +40,8 @@ const Chat = (props) => {
     useEffect(() => {
         if (currentChat) {
             /// need this to work to get messages
-            GetMessagesById(currentChat._id).then((res) => {
-                console.log(res.data);
+            GetChatsById(currentChat._id).then((res) => {
+                setMessages(res.data.data.messages);
             });
         }
     }, [currentChat]);
@@ -62,9 +59,20 @@ const Chat = (props) => {
                 },
                 currentChat._id
             );
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    sender: myUser._id,
+                    content: message
+                }
+            ]);
+
             setMessage("");
         }
     };
+
+    console.log(messages);
 
     return (
         <Grid container style={{ height: "100vh" }}>
@@ -94,7 +102,7 @@ const Chat = (props) => {
                                 key={msg.id}
                                 style={{
                                     marginBottom: 10,
-                                    textAlign: msg._id === myUser?._id ? "right" : "left"
+                                    textAlign: msg.sender === myUser?._id ? "right" : "left"
                                 }}
                             >
                                 <div
@@ -103,10 +111,10 @@ const Chat = (props) => {
                                         padding: "5px 10px",
                                         borderRadius: "10px",
                                         backgroundColor:
-                                            msg._id === myUser?._id ? "#DCF8C6" : "#F4F4F4"
+                                            msg.sender === myUser?._id ? "#DCF8C6" : "#F4F4F4"
                                     }}
                                 >
-                                    {msg.text}
+                                    {msg.content}
                                 </div>
                             </div>
                         ))}
