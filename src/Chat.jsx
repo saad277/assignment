@@ -14,7 +14,16 @@ import {
     Box
 } from "@mui/material";
 
-import { GetChats, GetUsers, PostMessage, GetChatsById, CreateGroup, CreateChat } from "./api";
+import {
+    GetChats,
+    GetUsers,
+    PostMessage,
+    GetChatsById,
+    CreateGroup,
+    CreateChat,
+    DeleteGroup,
+    DeleteChat
+} from "./api";
 import { toaster } from "./utils/toast.util";
 
 const Chat = (props) => {
@@ -144,20 +153,52 @@ const Chat = (props) => {
                         Chat List
                     </Typography>
                     <List>
-                        {chats.map((chat, index) => (
-                            <ListItem button key={index} onClick={() => setCurrentChat(chat)}>
-                                <Avatar style={{ marginRight: 10 }}>{chat._id[0]}</Avatar>
-                                <ListItemText primary={chat._id} />
-                            </ListItem>
-                        ))}
+                        {chats.map((chat, index) => {
+                            return (
+                                <ListItem button key={index} onClick={() => setCurrentChat(chat)}>
+                                    <Avatar style={{ marginRight: 10 }}>{chat._id[0]}</Avatar>
+                                    <ListItemText primary={chat._id} />
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 </Paper>
             </Grid>
             <Grid item xs={12} sm={6} md={6} lg={5}>
                 <Paper style={{ padding: 20, height: "100%", overflow: "auto" }}>
-                    <Typography variant="h5" gutterBottom>
-                        Chat App
-                    </Typography>
+                    <Box display={"flex"} justifyContent={"space-between"} mb={3}>
+                        <Typography variant="h5" gutterBottom>
+                            Chat App
+                        </Typography>
+
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                if (currentChat.group) {
+                                    DeleteChat(currentChat._id).then((res) => {
+                                        DeleteGroup(currentChat.group).then(() => {
+                                            GetChats().then((res) => {
+                                                setChats(res.data.data);
+
+                                                setCurrentChat(res.data.data[0]);
+                                            });
+                                        });
+                                    });
+                                } else {
+                                    DeleteChat(currentChat._id).then((res) => {
+                                        GetChats().then((res) => {
+                                            setChats(res.data.data);
+
+                                            setCurrentChat(res.data.data[0]);
+                                        });
+                                    });
+                                }
+                            }}
+                        >
+                            Delete CHAT
+                        </Button>
+                    </Box>
+
                     <div style={{ marginBottom: 20, height: "78vh", overflowY: "scroll" }}>
                         {messages.map((msg) => (
                             <div
@@ -256,8 +297,6 @@ const Chat = (props) => {
                                 key={index}
                                 sx={{ cursor: "pointer" }}
                                 onClick={() => {
-                                    console.log("ASdad", user._id);
-
                                     if (selectedUserIds.includes(user._id)) {
                                         setSelectedUserIds((prev) =>
                                             prev.filter((item) => item !== user._id)

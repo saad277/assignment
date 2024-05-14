@@ -35,3 +35,11 @@ export const CreateGroup = (body) => {
 export const CreateChat = (body) => {
     return new API(`/chats`, "POST").addBodyData(body).attachToken().send();
 };
+
+export const DeleteChat = (id) => {
+    return new API(`/chats/` + id, "DELETE").attachToken().send();
+};
+
+export const DeleteGroup = (id) => {
+    return new API(`/groups/` + id, "DELETE").attachToken().send();
+};
