@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CheckIcon from "@mui/icons-material/Check";
 import {
     TextField,
     Button,
@@ -8,10 +9,13 @@ import {
     List,
     ListItem,
     ListItemText,
-    Avatar
+    Avatar,
+    Modal,
+    Box
 } from "@mui/material";
 
-import { GetChats, GetUsers, GetMessagesById, PostMessage, GetChatsById } from "./api";
+import { GetChats, GetUsers, PostMessage, GetChatsById, CreateGroup, CreateChat } from "./api";
+import { toaster } from "./utils/toast.util";
 
 const Chat = (props) => {
     const { authUser, onLogout } = props;
@@ -20,8 +24,15 @@ const Chat = (props) => {
     const [messages, setMessages] = useState([]);
     const [myUser, setMyUser] = useState(null);
     const [chats, setChats] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [userList, setUserList] = useState([]);
 
     const [currentChat, setCurrentChat] = useState(null);
+
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+
+    const [selectedUserIds, setSelectedUserIds] = useState([]);
 
     useEffect(() => {
         GetChats().then((res) => {
@@ -33,6 +44,8 @@ const Chat = (props) => {
 
     useEffect(() => {
         GetUsers().then((res) => {
+            setUserList(res.data.data.filter((item) => item.email != authUser));
+
             setMyUser(res.data.data.find((item) => item.email == authUser));
         });
     }, []);
@@ -58,6 +71,32 @@ const Chat = (props) => {
             clearInterval(intervalId);
         };
     }, [currentChat]);
+
+    const handleCreateGroup = () => {
+        if (!selectedUserIds.length) {
+            toaster({ type: "error", message: "Please select members" });
+            return;
+        }
+
+        CreateGroup({ name, description }).then((res) => {
+            CreateChat({
+                type: 1,
+                members: selectedUserIds,
+                messages: [],
+                group: res.data.data._id
+            }).then((res) => {
+                toaster({ type: "success", message: "Group created!" });
+                handleClose();
+                setSelectedUserIds([]);
+                setName("");
+                setDescription("");
+
+                GetChats().then((res) => {
+                    setChats(res.data.data);
+                });
+            });
+        });
+    };
 
     const handleMessageChange = (event) => {
         setMessage(event.target.value);
@@ -85,9 +124,21 @@ const Chat = (props) => {
         }
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <Grid container style={{ height: "70vh" }}>
             <Grid item xs={12} sm={3} md={3} lg={4}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: 10, margin: 5 }}
+                    onClick={() => setOpen(true)}
+                >
+                    Create Group
+                </Button>
                 <Paper style={{ padding: 20, height: "100%", overflow: "auto" }}>
                     <Typography variant="h6" gutterBottom>
                         Chat List
@@ -158,6 +209,76 @@ const Chat = (props) => {
                     Logout
                 </Button>
             </Grid>
+
+            <Modal
+                open={open}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                onClose={() => {
+                    setSelectedUserIds([]);
+                    handleClose();
+                    setName("");
+                    setDescription("");
+                }}
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "background.paper",
+                        border: "2px solid #000",
+                        boxShadow: 24,
+                        p: 4
+                    }}
+                >
+                    <TextField
+                        label="Name"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                    <TextField
+                        label="Description"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <List>
+                        {userList.map((user, index) => (
+                            <ListItem
+                                key={index}
+                                sx={{ cursor: "pointer" }}
+                                onClick={() => {
+                                    console.log("ASdad", user._id);
+
+                                    if (selectedUserIds.includes(user._id)) {
+                                        setSelectedUserIds((prev) =>
+                                            prev.filter((item) => item !== user._id)
+                                        );
+                                    } else {
+                                        setSelectedUserIds([...selectedUserIds, user._id]);
+                                    }
+                                }}
+                            >
+                                <Avatar style={{ marginRight: 10 }}>{user._username}</Avatar>
+                                <ListItemText primary={user.username} />
+
+                                {selectedUserIds.includes(user._id) && <CheckIcon />}
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Button sx={{ marginTop: 3 }} onClick={handleCreateGroup}>
+                        Submit
+                    </Button>
+                </Box>
+            </Modal>
         </Grid>
     );
 };

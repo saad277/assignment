@@ -27,3 +27,11 @@ export const GetMessagesById = (id) => {
 export const PostMessage = (body, id) => {
     return new API(`/chats/${id}/message`, "POST").addBodyData(body).attachToken().send();
 };
+
+export const CreateGroup = (body) => {
+    return new API(`/groups`, "POST").addBodyData(body).attachToken().send();
+};
+
+export const CreateChat = (body) => {
+    return new API(`/chats`, "POST").addBodyData(body).attachToken().send();
+};
