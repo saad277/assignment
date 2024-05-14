@@ -137,6 +137,8 @@ const Chat = (props) => {
         setOpen(false);
     };
 
+    console.log(currentChat);
+
     return (
         <Grid container style={{ height: "70vh" }}>
             <Grid item xs={12} sm={3} md={3} lg={4}>
@@ -240,15 +242,28 @@ const Chat = (props) => {
                 </Paper>
             </Grid>
 
-            <Grid lg={3} p={5} justifyContent={"flex-end"} display={"flex"}>
+            <Grid lg={3} p={5}>
                 <Button
                     variant="contained"
                     color="secondary"
-                    sx={{ height: 40 }}
+                    sx={{ height: 40, marginBottom: 7 }}
                     onClick={onLogout}
                 >
                     Logout
                 </Button>
+
+                <Typography variant="h5">MEMBERS</Typography>
+
+                <List>
+                    {currentChat.members.map((member, index) => {
+                        return (
+                            <ListItem key={index}>
+                                <Avatar style={{ marginRight: 10 }}>{member.username}</Avatar>
+                                <ListItemText primary={member.username} />
+                            </ListItem>
+                        );
+                    })}
+                </List>
             </Grid>
 
             <Modal
