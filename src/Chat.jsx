@@ -14,7 +14,7 @@ import {
 import { GetChats, GetUsers, GetMessagesById, PostMessage, GetChatsById } from "./api";
 
 const Chat = (props) => {
-    const { authUser } = props;
+    const { authUser, onLogout } = props;
 
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -38,12 +38,25 @@ const Chat = (props) => {
     }, []);
 
     useEffect(() => {
+        let intervalId = null;
         if (currentChat) {
             /// need this to work to get messages
             GetChatsById(currentChat._id).then((res) => {
                 setMessages(res.data.data.messages);
             });
+
+            intervalId = setInterval(
+                () =>
+                    GetChatsById(currentChat._id).then((res) => {
+                        setMessages(res.data.data.messages);
+                    }),
+                2000
+            );
         }
+
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [currentChat]);
 
     const handleMessageChange = (event) => {
@@ -72,14 +85,12 @@ const Chat = (props) => {
         }
     };
 
-    console.log(messages);
-
     return (
-        <Grid container style={{ height: "100vh" }}>
-            <Grid item xs={12} sm={3} md={3}>
+        <Grid container style={{ height: "70vh" }}>
+            <Grid item xs={12} sm={3} md={3} lg={4}>
                 <Paper style={{ padding: 20, height: "100%", overflow: "auto" }}>
                     <Typography variant="h6" gutterBottom>
-                        User List
+                        Chat List
                     </Typography>
                     <List>
                         {chats.map((chat, index) => (
@@ -91,7 +102,7 @@ const Chat = (props) => {
                     </List>
                 </Paper>
             </Grid>
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6} md={6} lg={5}>
                 <Paper style={{ padding: 20, height: "100%", overflow: "auto" }}>
                     <Typography variant="h5" gutterBottom>
                         Chat App
@@ -135,6 +146,17 @@ const Chat = (props) => {
                         Send
                     </Button>
                 </Paper>
+            </Grid>
+
+            <Grid lg={3} p={5} justifyContent={"flex-end"} display={"flex"}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ height: 40 }}
+                    onClick={onLogout}
+                >
+                    Logout
+                </Button>
             </Grid>
         </Grid>
     );

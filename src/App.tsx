@@ -50,7 +50,17 @@ function App() {
                     <Routes>
                         <Route
                             path={"/home"}
-                            element={<Chat setAccess={setAccess} authUser={authUser} />}
+                            element={
+                                <Chat
+                                    setAccess={setAccess}
+                                    authUser={authUser}
+                                    onLogout={() => {
+                                        setAccess(null);
+                                        setAuthUser(null);
+                                        localStorage.clear();
+                                    }}
+                                />
+                            }
                         />
                         <Route path="*" element={<Navigate to={"/home"} />} />
                     </Routes>
@@ -74,4 +84,3 @@ function App() {
 }
 
 export default App;
-
